@@ -1,0 +1,51 @@
+﻿@page "/selectedEvent"
+@inject IDatabaseQuery query;
+
+<section class="card-list">
+    @foreach (var item in queryResult)
+       {
+        <article class="card" @onclick="@(() => SelectEvent(item))">
+        <header class="card-header">
+            <div class="joined-count">
+                <span >@item.PeopleJoined.Count() / @item.MaxAllowed</span>
+            </div>
+          <p>@item.CreatedDate</p>
+          <h2>@item.EventTitle</h2>
+          <p class="activity-description">         
+          
+            @item.EventDescription                             
+        </p>       
+        </header>
+
+        
+        <div class="tags">
+            @if (item.Subtags != null)
+           {
+               @foreach (var tags in item.Subtags)
+                {
+                    <p>@tags.TagId.TagName</p>
+                } 
+           }
+        
+        </div>
+      </article>
+       }
+    }
+</section>
+
+ 
+
+@code
+{
+    List<EventModel> queryResult = new List<EventModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        queryResult = await query.GetEventsByType(0);
+    }
+
+    void SelectEvent(EventModel model)
+    {
+        
+    }
+}

@@ -1,0 +1,561 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&display=swap');
+
+
+
+body {
+    padding: 0;
+    margin: 0;
+    background-color: #17141d;
+    color: white;
+    font-family: 'DM Mono', monospace;  
+    overflow-x: hidden;
+}
+
+.search-bar
+{
+    display: flex;
+    justify-content: right;
+    gap: 10px;   
+}
+
+.bar-btns 
+{    
+   display: flex;  
+   margin: 20px;
+}
+
+
+.subtags-box
+{   
+    position: absolute;
+    right: 100px;
+}
+
+.subtags-tag
+{  
+    display:flex;
+    justify-content: right;
+    justify-self: right;
+    margin-right: 100px;
+}
+
+.subtag-names
+{
+    display:flex;
+    gap: 20px;
+}
+
+.newEvent-container
+{   
+    display: grid;   
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    margin-top: 10px;
+    margin: 50px;
+    width: 100%;
+}
+
+.option-select-obj{  
+   position: relative;
+   justify-self: center;     
+}
+
+.option-select-obj button
+{  
+    margin-top: 20px;
+    width: 100px;
+    height: 50px;
+}
+
+.description-box
+{
+    display:grid;
+    grid-template-columns: 30% 70%;
+    width: 100%;
+    margin: 20px;
+    justify-items:center;
+}
+
+.description-box textarea
+{
+    width: 800px;
+    height: 400px;
+}
+
+.description-box input
+{
+    height: 44px;
+    width: 40px;
+    margin-left: 15px;
+}
+
+.member-editor
+{
+    margin-left: 50px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+      
+}
+
+.ageValues
+{
+    display:flex;
+}
+
+.interact-row
+{
+    display: flex;
+    width: 100%; 
+    position: absolute;
+    bottom: 0;
+    left: 0;  
+    justify-content: center;   
+    gap: 10px;
+}
+
+    .interact-row button {
+        width: 100px;
+        height: 50px;
+        border-radius: 10px;
+        background: linear-gradient(to left, #ff105f, #ffad06);
+        color: white;
+    }
+
+        .interact-row button:hover {
+            cursor: pointer;
+            background: #ffad06;
+        }
+
+.back-btn
+{
+    display: flex;
+    position: absolute;
+    left:0; 
+    top: 0;
+}
+
+    .back-btn button {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(to left, #ff105f, #ffad06);      
+    }
+
+#bg-img
+{
+    position: fixed;
+    top: 50%;
+    left:50%; 
+       
+    width: 100%;
+    height: 100%;
+
+    transform:translate(-50%, -50%);
+}
+
+.event-page {  
+    display: flex;
+    justify-content: center;
+    position: center;
+    width: 90%;         
+}
+
+.event-page p 
+{
+    width: inherit;
+    justify-self: center;
+    text-align: center;
+}
+
+.attending-event {
+    width: 100%;
+    display:grid;
+    grid-template-rows: 1fr 1fr;    
+    position: fixed;
+    justify-content: center;
+    bottom: 0;
+}
+
+.attending-event h5
+{
+    justify-self: center;
+}
+
+.hero {
+        height: 100%;
+        width: 100%;
+        background-position: center;
+        background-size: cover;
+        position: absolute;
+}
+
+.button-box
+{
+    width: 220px;
+    margin: 35px auto;
+    position: relative;
+    box-shadow: 0 0 20px 9px #ff61241f;
+    border-radius: 30px;
+}
+
+.toggle-btn
+{
+    padding: 10px 30px;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    outline: none;
+    position: relative;
+}
+
+#btn
+{
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: 110px;
+    height:100%;
+    background: linear-gradient(to right, #ff105f, #ffad06);
+    border-radius: 30px;
+    transition: .5s;
+}
+
+#login
+{
+    left: 50px;
+}
+
+#register {
+    left: 450px;
+}
+
+.social-icons
+{
+    margin: 30px auto;
+    text-align: center;
+}
+
+.social-icons img {
+    width: 30px;
+    margin: 0 12px;
+    box-shadow: 0 0 20px 0 #7f7f7f3d;
+    cursor:pointer;
+    border-radius: 50%;
+}
+
+.input-group
+{
+    top: 180px;
+    position:absolute;
+    width: 280px;
+    transition: .5s;
+}
+.input-group span {
+   color: black;
+   font-size: 12px;
+   bottom: 68px;
+   position: absolute;
+}
+
+.input-field {
+    width: 100%;
+    padding: 10px 0;
+    margin: 5px 0;
+    border-left: 0;
+    border-top: 0;
+    border-right: 0;
+    border-bottom: 1px solid #999;
+    outline: none;
+    background: transparent;
+}
+
+.submit-btn {
+    width: 85%;
+    padding: 10px 30px;
+    cursor: pointer;
+    display: block;
+    margin: auto;
+    background: linear-gradient(to right, #ff105f, #ffad06);
+    border: 0;
+    outline: none;
+    border-radius: 30px;
+}
+
+.check-box
+{
+    margin: 30px 10px 30px 0;
+}
+
+.form-box
+{
+    width: 380px;
+    height: 600px;
+    position:relative;
+    margin: 6% auto;
+    background: #fff;
+    padding: 5px;
+    overflow: hidden;
+}
+
+.welcome-text
+{
+    display:flex;
+    justify-content:center;
+}
+
+.login-holder{
+    display: grid;
+    position:fixed;
+    top:50%;
+    left:43%;   
+}
+
+.account-access {
+    font-style: normal;
+    font-weight: 700;
+    font-size: .5rem;
+    color: #7a7a8c;
+    text-transform: uppercase;
+    font-size: .66rem;
+    border: 3px solid #28242f;
+    border-radius: 2rem;   
+    width: 200px;
+    height: 50px;   
+    background-color: transparent;  
+    margin: 10px;
+    transition: .5s;
+}
+
+    .account-access:hover {
+        background: linear-gradient(90deg,#ff8a00,#e52e71);
+        text-shadow: none;       
+        color: white;
+    }
+
+a {
+    text-decoration: none;
+}
+
+.card-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-auto-rows: minmax(350px, auto);
+    padding: 3rem;  
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-bottom: 20px;
+}
+
+    .card-list::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    .card-list::-webkit-scrollbar-thumb {
+        background: #201c29;
+        border-radius: 10px;
+        box-shadow: inset 2px 2px 2px hsla(0,0%,100%,.25), inset -2px -2px 2px rgba(0,0,0,.25);
+    }
+
+    .card-list::-webkit-scrollbar-track {
+        background: linear-gradient(90deg,#201c29,#201c29 1px,#17141d 0,#17141d);
+    }
+
+
+.card {
+    height: 350px;
+    width: 400px;
+    min-width: 250px;
+    padding: 1.5rem;
+    border-radius: 16px;
+    background: #17141d;
+    box-shadow: -1rem 0 3rem #000;
+    display: flex;
+    flex-direction: column;
+    transition: .2s;  
+    scroll-snap-align: start;
+    clear: both;
+    position: relative;
+    margin-bottom: 5px;
+}  
+
+.card img 
+{
+    height: 350px;
+    width: 400px;
+    border-radius: 16px;
+    margin-top: 10px;
+}
+
+.joined-count
+{
+    width: 70%;
+    display: flex;
+    justify-content: flex-end;
+    position:absolute;
+}
+
+    .card:hover {
+        transform: translateY(-1rem);
+    }   
+
+.card-header {
+    margin-bottom: auto;
+}
+
+    .card-header p {
+        font-size: 14px;
+        margin: 0 0 1rem;
+        color: #7a7a8c;
+    }
+
+    .card-header h2 {
+        font-size: 20px;
+        margin: .25rem 0 auto;
+        text-decoration: none;
+        color: inherit;
+        border: 0;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+        .card-header h2:hover {
+            background: linear-gradient(90deg,#ff8a00,#e52e71);
+            text-shadow: none;
+            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+
+.activity-avatar {
+    grid-area: auto;
+    align-self: start;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    filter: grayscale(100%);
+    display: block;
+    overflow: hidden;
+    margin: 16px 10px;
+}  
+
+.activity-description {   
+   height: 200px;
+   overflow: hidden;
+   word-wrap: break-word;
+}
+.activity-name {
+    grid-area: auto;
+    box-sizing: border-box;
+
+}
+
+.activity-name-prefix {
+    font-style: normal;
+    font-weight: 700;
+    color: #7a7a8c;
+}
+
+.half-circle {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 48px;
+    fill: none;
+    stroke: #ff8a00;
+    stroke-width: 8;
+    stroke-linecap: round;
+    pointer-events: none;
+}
+
+.tags {
+    display:flex;
+    margin: 1rem 0 2rem;
+    padding: .5rem 0 1rem;
+    line-height: 2;
+    margin-bottom: 0;
+}
+
+    .tags p {
+        font-style: normal;
+        font-weight: 700;
+        font-size: .5rem;
+        color: #7a7a8c;
+        text-transform: uppercase;
+        font-size: .66rem;
+        border: 3px solid #28242f;
+        border-radius: 2rem;
+        padding: .2rem .85rem .25rem;
+        position: relative;
+    }
+
+        .tags p:hover {
+            background: linear-gradient(90deg,#ff8a00,#e52e71);
+            text-shadow: none;
+            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text;
+            -webkit-box-decoration-break: clone;
+            background-clip: text;
+            border-color: white;
+        }
+
+.dropbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+    /* Links inside the dropdown */
+    .dropdown-content p {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+
+        /* Change color of dropdown links on hover */
+        .dropdown-content a:hover {
+            background-color: #f1f1f1
+        }
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
+
+.centered-paragraph
+{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}

@@ -1,0 +1,33 @@
+﻿@inherits LayoutComponentBase
+@inject PersistentData data;
+@inject DesignHelper designer;
+
+@if (displayed)
+{
+    <img id="bg-img" src="@designer.bgUrl"/>       
+}
+
+<div class="page" style="color: @color">  
+    <main>
+       @Body
+    </main>
+</div>
+
+
+@code
+{
+    bool displayed;
+    string color = "white";
+    protected override void OnInitialized()
+    {
+        designer.OnChange += ChangeProperty;
+    }
+
+    void ChangeProperty()
+    {
+        displayed = designer.bgDisplayed;
+        color = designer.FontColor;
+        StateHasChanged();
+    }
+  
+}

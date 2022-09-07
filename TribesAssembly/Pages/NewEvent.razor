@@ -1,0 +1,198 @@
+﻿@page "/newevent"
+@inject PersistentData data;
+@inject IDatabaseQuery query;
+@inject NavigationManager navMan;
+@inject ServerConnection conn;
+@inject DesignHelper helper;
+@using System.Linq;
+
+<div class="newEvent-container">
+    <div class="option-select-obj">
+        <p>Esemény név: </p>      
+        <input type="text" placeholder="Valami név" @bind-value="newEvent.EventTitle"/>
+    </div>  
+    <div class="option-select-obj">
+        <p>Max résztvevők: </p>      
+        <input type="number" @onchange="Changed" placeholder="@deafultParticipantCount"/>
+    </div>  
+    <div class="option-select-obj">
+        <p>Időpont:</p>
+        <input type="datetime-local" @bind-value="newEvent.StartDate"/>
+    </div>
+    <div class="dropdown option-select-obj">
+  <button class="dropbtn">@categoryName</button>
+  <div class="dropdown-content">
+    <p @onclick="() => SelectCategory(EventMetaType.Nature)">Természet</p>
+    <p @onclick="() => SelectCategory(EventMetaType.Travel)">Utazás</p>
+    <p @onclick="() => SelectCategory(EventMetaType.Drinking)">Étel / Ital</p>
+    <p @onclick="() => SelectCategory(EventMetaType.Entertainment)">Szórazkozás</p>
+    <p @onclick="() => SelectCategory(EventMetaType.Sports)">Sport</p>
+  </div>
+</div>
+    <div class="option-select-obj">
+        <button @onclick="CreateEvent" type="button">Kész</button>
+    </div>
+</div>
+<div class="description-box">
+    <div class="member-editor">
+       @foreach (var item in newEvent.RequestedPeople)
+      {
+           <div class="dropdown">
+            <button class="dropbtn">@GetGender(item)</button>
+                <div class="dropdown-content">
+                    <p @onclick="() => SelectGender(item, 0)">nő</p>
+                    <p @onclick="() => SelectGender(item, 1)">férfi</p>  
+                    <p @onclick="() => SelectGender(item, 2)">bárki</p> 
+                </div>
+          </div> 
+          <div class="ageValues">
+               <input @bind-value="newEvent.RequestedPeople.Find(e => e == item).MinAge" type="number" placeholder="min kor"/>
+               <input @bind-value="newEvent.RequestedPeople.Find(e => e == item).MaxAge" type="number" placeholder="max kor"/>
+          </div>
+       
+      }
+    </div>
+    <textarea @bind="newEvent.EventDescription" placeholder="Leírás az eseményről..."></textarea>
+</div>
+<div class="subtags-box">
+    <div class="subtags-tag">
+        <p>Tagek</p>
+    </div>
+    <div class="subtag-names tags">
+        @foreach (var item in newEvent.Subtags)
+       {
+           <p>@item.TagId.TagName</p>
+       }
+    <div>
+        <input @bind-value="tagName" type="text"/>
+        <button @onclick="AddTag">Hozzáad</button>
+    </div>
+    </div>
+</div>
+<div class="back-btn">
+    <button type="button" @onclick="Back">Vissza</button>
+</div>
+
+@code {
+    EventModel newEvent = new EventModel();   
+    string categoryName = "Kategória";
+
+    string tagName = "";
+    int tagsCount = 0;
+    int deafultParticipantCount = 5;
+
+    void Back()
+    {
+        helper.FontColor = "white";
+        navMan.NavigateTo("metaselection");
+    }
+
+    string GetGender(RequestedPeople req)
+    {
+        string res = "Bárki";
+
+        if (req.Gender == 0)
+        {
+            res = "Nő";
+            return res;
+        }
+
+        if (req.Gender == 1)
+        {
+            res = "Férfi";
+            return res;
+        }
+
+        return "Bárki";
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        newEvent.MaxAllowed = deafultParticipantCount;
+        newEvent.CreatedBy = data.User;
+        newEvent.StartDate = DateTime.Now;
+        newEvent.Subtags = new List<TagsUsed>();    
+
+        newEvent.RequestedPeople = new List<RequestedPeople>();
+
+        for (var i = 0; i < newEvent.MaxAllowed; i++)
+        {
+            newEvent.RequestedPeople.Add(new RequestedPeople(10,99,2));                             
+        }
+    }
+
+    void Changed(ChangeEventArgs e)
+    {
+        string res = e.Value.ToString();
+        newEvent.MaxAllowed = Int32.Parse(res);
+        newEvent.RequestedPeople.Clear();
+
+        for (var i = 0; i < newEvent.MaxAllowed; i++)
+        {
+            newEvent.RequestedPeople.Add(new RequestedPeople(10,99,0));                             
+        }
+        StateHasChanged();
+    }
+
+    void SelectCategory(EventMetaType type)
+    {
+        switch (type)
+        {
+            case EventMetaType.Nature:            
+                newEvent.MetaType = EventMetaType.Nature;
+                categoryName = "Természet";
+                break;
+            case EventMetaType.Travel:              
+                newEvent.MetaType = EventMetaType.Travel;
+                categoryName = "Utazás";
+                break;
+            case EventMetaType.Drinking:             
+                newEvent.MetaType = EventMetaType.Drinking;
+                categoryName = "Étel / Ital";
+                break;
+            case EventMetaType.Entertainment:             
+                newEvent.MetaType = EventMetaType.Entertainment;
+                categoryName = "Szórakozás";
+                break;
+            case EventMetaType.Sports:              
+                newEvent.MetaType = EventMetaType.Sports;
+                categoryName = "Sport";
+                break;
+            default:              
+                break;
+        }
+        helper.SetColors(type);
+        helper.SelectBg(type);
+    }     
+  
+    void SelectGender(RequestedPeople req, int val)
+    {       
+        req.Gender = val;
+    }
+
+    void SelectMinMaxAge(RequestedPeople req, int min, int max)
+    {
+        req.MinAge = min;
+        req.MaxAge = max;
+    }
+
+    async Task CreateEvent()
+    {     
+        await conn.PostRequest<EventModel>("/api/Events", newEvent);
+        navMan.NavigateTo("metaselection");
+    }
+
+    void AddTag()
+    {
+        if (tagsCount < 5)
+        {
+            TagsUsed tag = new TagsUsed();        
+            tag.AddTagName(tagName);
+            newEvent.Subtags.Add(tag);
+            tagsCount++;
+            StateHasChanged();
+        }    
+    }
+}

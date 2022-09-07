@@ -1,0 +1,178 @@
+﻿@page "/search"
+@inject ServerConnection conn;
+@inject NavigationManager navMan;
+@inject PersistentData data;
+@inject DesignHelper helper;
+@inject IDatabaseQuery query;
+
+<div class="back-btn">
+    <button @onclick="Back">vissza</button>     
+</div>
+
+@if (!isSomethingSelected)
+{
+    <div class="search-bar">
+        @foreach (var item in tags)
+       {
+           <p @onclick="() => RemoveTag(item)">@item</p>
+       }
+    <div class="bar-btns">
+        <input @bind-value="tagName" type="text"/>
+        <button @onclick="SearchForTags">Hozzáad</button>
+    </div>
+</div>
+
+    @if (result.Count != 0)
+    {
+        <section class="card-list">
+        @foreach (var item in result)
+        {
+        <article class="card" @onclick="() => SelectEvent(item.EventId)">
+        <header class="card-header">
+            <div class="joined-count">
+                <span>@item.EventId.PeopleJoined.Count() / @item.EventId.MaxAllowed</span>
+            </div>
+          <p>@item.EventId.StartDate</p>
+          <h2>@item.EventId.EventTitle</h2>
+          <p class="activity-description">                  
+            @item.EventId.EventDescription                            
+          </p>       
+        </header>
+
+        
+        <div class="tags">
+           @foreach (var tag in item.EventId.Subtags)
+          {
+              <!--the api returns null for the first hit for some reason-->
+              @if (tag != null)
+              {
+                 <p>@tag.TagId.TagName</p>
+              }
+              else
+              {
+                 <p>@item.TagId.TagName</p>           
+              }
+          }
+        </div>
+        </article>
+            }  
+        </section>
+    }
+}
+else
+{
+    <div class="back-btn">
+    <button @onclick="Unselect">vissza</button>     
+    </div>
+
+    <div class="event-page">
+        <h2>@selected.EventTitle</h2>     
+    </div>
+    <div class="event-page">
+         <p>@selected.EventDescription</p>
+    </div>
+    <div class="attending-event">
+        <h5>Résztvevők:</h5>
+        <div>
+            <span>résztvevők: @selected.PeopleJoined.Count() / @selected.MaxAllowed</span>
+            @if (CanJoinEvent())
+           {
+               <button type="button" @onclick="JoinEvent">Csatlakozás</button>
+           }
+        </div>      
+    </div>
+}
+
+
+
+
+@code {
+    string tagName = "";
+    int currTagCount = 0;
+    List<string> tags = new List<string>();
+    List<TagsUsed> result = new List<TagsUsed>();
+    EventModel? selected;
+    bool isSomethingSelected = false;
+    JoinedEvents joined;
+
+
+    async Task SearchForTags()
+    {
+        if (!tags.Contains(tagName) && currTagCount < 5)
+        {
+            tags.Add(tagName);
+            currTagCount++;
+            var res = await conn.CreateRequest<TagsUsed>($"/api/Events/tag?tag={tagName}");
+            result.AddRange(res);
+        }          
+        StateHasChanged();
+    }
+
+    void Back()
+    {
+        navMan.NavigateTo("metaselection");
+    }
+
+    void RemoveTag(string tag)
+    {
+        var hits = result.Where(x => x.TagId.TagName.ToLower() == tag.ToLower()).ToList();
+
+        foreach (var item in hits)
+        {
+            result.Remove(item);
+        }
+
+        tags.Remove(tag);
+
+        StateHasChanged();
+    }
+
+    void AddTag()
+    {
+        if (!tags.Contains(tagName) && currTagCount < 5)
+        {
+            tags.Add(tagName);
+            currTagCount++;
+            tagName = "";
+            StateHasChanged();
+        }
+    }
+
+    void SelectEvent(EventModel model)
+    {
+        selected = model;
+        helper.SelectBg(selected.MetaType);
+        helper.SetColors(selected.MetaType);
+        isSomethingSelected = true;
+    }
+
+    void Unselect()
+    {      
+        isSomethingSelected = false;
+        helper.DisableBg();
+        helper.FontColor = "white";
+    }
+
+    bool CanJoinEvent()
+    {
+        bool res = false;
+
+        if (selected == null || selected.CreatedBy.Id == data.User.Id)
+        {
+            return res;
+        }
+
+        res = selected.RequestedPeople.Where(r => r.Gender == data.User.Gender || r.Gender > 1 && data.User.GetAge() > r.MinAge && data.User.GetAge() < r.MaxAge).Count() < 0;
+
+        return res;
+    }
+
+    async Task JoinEvent()
+    {
+        joined = new JoinedEvents(data.User.Id, selected.Id);
+        await conn.PostRequest<JoinedEvents>($"/api/JoinedEvents?userId={data.User.Id}&eventId={selected.Id}", joined);
+        selected.PeopleJoined.Add(new JoinedEvents { Id =0, EventID = selected.Id, UserID = data.User.Id});
+        StateHasChanged();
+        //await query.JoinEvent(joined);
+    }
+}

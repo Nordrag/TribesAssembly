@@ -1,0 +1,27 @@
+﻿@page "/counter"
+@inject IDatabaseQuery data;
+
+<PageTitle>Counter</PageTitle>
+
+@if (users.Count > 0)
+{
+    foreach (var item in users)
+    {
+        <p>@item.FirstName</p>
+    }
+}
+else
+{
+    <p>no result</p>
+}
+
+<button class="btn btn-primary" @onclick="GetUsers">Click me</button>
+
+@code {
+    List<User> users = new List<User>();
+
+    private async Task GetUsers()
+    {
+        users = await data.GetUsers();
+    }
+}

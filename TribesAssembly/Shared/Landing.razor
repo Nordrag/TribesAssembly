@@ -1,0 +1,120 @@
+﻿@page "/"
+@inject NavigationManager navMan;
+@inject IDatabaseQuery userData;
+@inject PersistentData currUser;
+
+<div class="welcome-text">
+    <h1>Welcome to Tribes</h1>
+</div>
+
+<div class="hero">
+    <div class="form-box">
+        <div class="button-box">
+            <div style="left: @btnLeftPos" id="btn"></div>
+            <button type="button" @onclick="RedirectToLogin" class="toggle-btn">Log In</button>
+            <button type="button" @onclick="RedirectToRegister" class="toggle-btn">Register</button>
+        </div>
+        <div class="social-icons">
+            <img src="/fb.png" />
+            <img src="/gp.png" />
+            <img src="/tw.png" />
+        </div>
+        <form id="login" style="left: @loginLeftPos" class="input-group">
+            <input type="text" class="input-field" placeholder="User Id" required @bind-value="email"/>
+            <input type="password" class="input-field" placeholder="Password" required @bind-value="pw"/>
+            <input type="checkbox" class="check-box" /><span>Remember password</span>
+            <button type="button" class="submit-btn" @onclick="Login" >Login</button>
+        </form>
+         <form id="register" style="left: @registerLeftPos" class="input-group">
+            <input type="text" class="input-field" placeholder="First Name" required @bind-value="firstName"/>
+            <input type="text" class="input-field" placeholder="Last Name" required @bind-value="lastName"/>
+            <input type="email" class="input-field" placeholder="E-mail" required @bind-value="regMail"/>
+            <input type="password" class="input-field" placeholder="Password" required @bind-value="regPw"/>
+             <div style="margin-left: 120px" class="dropdown">               
+            <button class="dropbtn">@genderText</button>
+                <div class="dropdown-content">
+                    <p @onclick="() => SelectGender(0)">nő</p>
+                    <p @onclick="() => SelectGender(1)">férfi</p>                    
+                </div>
+          </div> 
+            <input type="date" class="input-field" required @bind-value="birthDate"/>
+            <input type="checkbox" class="check-box" /><span>I agree to the terms and conditions</span>
+            <button type="button" class="submit-btn" @onclick="Register">Register</button>
+        </form>
+    </div>
+
+</div>
+
+
+
+@code {
+    string email = "someMail";
+    string pw = "somePw";
+    string genderText = "Nem";
+
+    string regMail, regPw, firstName, lastName;
+
+    string loginLeftPos = "50px";
+    string registerLeftPos = "450px";
+    string btnLeftPos = "0px";
+    int gender = 0;
+    DateTime birthDate;
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        birthDate = DateTime.Now;
+    }
+
+    void RedirectToLogin()
+    {        
+        loginLeftPos = "50px";
+        registerLeftPos = "450px";
+        btnLeftPos = "0px";
+    }
+
+    void RedirectToRegister()
+    {      
+        loginLeftPos = "-400px";
+        registerLeftPos = "50px";
+        btnLeftPos = "110px";
+    }
+
+
+    async void Login()
+    {
+        var res = await userData.GetUser(email);
+
+        if (res.Password == pw)
+        {
+            currUser.User = res;
+            navMan.NavigateTo("metaselection");
+        }
+    }
+
+    async void Register()
+    {
+        //validate first, request the new id
+        User newUser = new User(0, regMail, regPw, firstName, lastName, 1);
+        newUser.BirthDate = birthDate;
+        newUser.Gender = gender;
+        await userData.CreateUser(newUser);
+        currUser.User = newUser;
+        navMan.NavigateTo("metaselection");
+    }
+
+    void SelectGender(int Gender)
+    {
+        gender = Gender;
+
+        if (gender == 0)
+        {
+            genderText = "Nő";
+        }
+        else
+        {
+            genderText = "férfi";
+        }
+    }
+}

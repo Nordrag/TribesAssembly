@@ -1,0 +1,168 @@
+﻿@page "/account"
+@inject NavigationManager navMan
+@inject PersistentData data
+@inject ServerConnection conn
+
+
+@if (selected == null)
+{
+    <div class="back-btn">
+    <button @onclick="Back">Vissza</button>
+</div>
+<div>
+    <div class="centered-paragraph">
+        <span>Kor: @age</span>
+        <span>Nem: @gender</span>
+        <span>Név: @fullName</span>
+    </div>
+</div>
+
+<div class="centered-paragraph">
+    <p>Általam létrehozott események:</p>
+</div>
+
+<section class="card-list">
+        @foreach (var item in myEvents)
+        {
+        <article class="card" @onclick="() => SelectEvent(item)">
+        <header class="card-header">
+            <div class="joined-count">
+                <span>@item.PeopleJoined.Count() / @item.MaxAllowed</span>
+            </div>
+          <p>@item.StartDate</p>
+          <h2>@item.EventTitle</h2>
+          <p class="activity-description">                  
+            @item.EventDescription                            
+          </p>       
+        </header>
+
+        
+        <div class="tags">
+           @foreach (var tag in item.Subtags)
+          {
+             <p>@tag.TagId.TagName</p>
+          }
+        </div>
+        </article>
+            }  
+</section>
+
+<div class="centered-paragraph">
+    <p>Események amikhez csatlakoztam:</p>
+</div>
+
+
+
+
+<section class="card-list">
+        @foreach (var item in joinedEvents)
+        {
+        <article class="card" @onclick="() => SelectEvent(item.Event)">
+        <header class="card-header">
+            <div class="joined-count">
+                <span>@item.Event.PeopleJoined.Count() / @item.Event.MaxAllowed</span>
+            </div>
+          <p>@item.Event.StartDate</p>
+          <h2>@item.Event.EventTitle</h2>
+          <p class="activity-description">                  
+            @item.Event.EventDescription                            
+          </p>       
+        </header>
+
+        
+        <div class="tags">
+           @foreach (var tag in item.Event.Subtags)
+          {
+             <p>@tag.TagId.TagName</p>
+          }
+        </div>
+        </article>
+            }  
+        </section>
+}
+else
+{
+    <div class="back-btn">
+    <button @onclick="Unselect">vissza</button>     
+    </div>
+
+    <div class="event-page">
+        <h2>@selected.EventTitle</h2>     
+    </div>
+    <div class="event-page">
+         <p>@selected.EventDescription</p>
+    </div>
+    <div class="attending-event">
+        <h5>Résztvevők:</h5>
+        <div>
+            <span>résztvevők: @selected.PeopleJoined.Count() / @selected.MaxAllowed</span>       
+           @if (CreatedByUser())
+            {
+                <button type="button" @onclick="DeleteEvent">Esemény törlése</button>
+            }
+            else
+            {
+                 <button type="button" @onclick="LeaveEvent">Leiratkozás</button>
+            }
+        </div>      
+    </div>
+}
+
+
+
+@code {
+
+    List<EventModel> myEvents;
+    List<JoinedEvents>? joinedEvents;
+    EventModel? selected;
+
+    int age = 0;
+    string gender, fullName;
+
+    protected override async Task OnInitializedAsync()
+    {      
+        myEvents = await conn.CreateRequest<EventModel>($"/api/Events/owner?id={data.User.Id}");
+        joinedEvents = await conn.CreateRequest<JoinedEvents>($"/api/Events/joined?id={data.User.Id}");
+        age = data.User.GetAge();
+        gender = data.User.Gender == 0 ? "Nő" : "Férfi";
+        fullName = data.User.FirstName + " " + data.User.LastName;
+    } 
+
+    void Back()
+    {
+        navMan.NavigateTo("metaselection");
+    }
+
+    void SelectEvent(EventModel sEvent)
+    {
+        selected = sEvent;
+        StateHasChanged();
+    }
+
+    void Unselect()
+    {
+        selected = null;
+        StateHasChanged();
+    } 
+
+    async Task DeleteEvent()
+    {
+        await conn.DeleteRequest($"/api/Events/{selected.Id}");
+        myEvents.Remove(selected);
+        selected = null;
+        StateHasChanged();
+    }
+
+    bool CreatedByUser()
+    {
+        return selected.CreatedBy.Id == data.User.Id;
+    }
+
+    async Task LeaveEvent()
+    {     
+        await conn.DeleteRequest($"/api/JoinedEvents/id?accId={data.User.Id}&eventId={selected.Id}");
+        joinedEvents.Remove(joinedEvents.Where(e => e.User == null).First());
+        selected = null;
+        StateHasChanged();
+    }
+}
